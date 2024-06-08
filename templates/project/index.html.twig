@@ -1,0 +1,44 @@
+{# templates/project/index.html.twig #}
+
+<form action="{{ path('app_project_index') }}" method="GET">
+    <input type="text" name="title" placeholder="Search by Title">
+    <select name="status">
+        <option value="">Filter by Status</option>
+        <option value="{{ constant('App\\Entity\\Project::STATUS_EN_COURS') }}">En cours</option>
+        <option value="{{ constant('App\\Entity\\Project::STATUS_TERMINER') }}">Terminé</option>
+    </select>
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for project in projects %}
+        <tr>
+            <td>{{ project.title }}</td>
+            <td>{{ project.description }}</td>
+            <td>{{ project.startDate ? project.startDate|date('Y-m-d H:i:s') : '' }}</td>
+            <td>{{ project.endDate ? project.endDate|date('Y-m-d H:i:s') : '' }}</td>
+            <td>{{ project.status == 'encours' ? 'En cours' : (project.status == 'terminer' ? 'Terminé' : '') }}</td>
+            <td>
+                <a href="{{ path('app_project_show', {'id': project.id}) }}">Show</a>
+                <a href="{{ path('app_project_edit', {'id': project.id}) }}">Edit</a>
+                <form action="{{ path('app_project_delete', {'id': project.id}) }}" method="POST" style="display: inline-block">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ project.id) }}">
+                    <button type="submit" class="btn btn-link" onclick="return confirm('Are you sure you want to delete this item?');">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
